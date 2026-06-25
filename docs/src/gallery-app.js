@@ -1,5 +1,7 @@
 import { filterProjects, getAllTags, getPublicProjects } from "./project-utils.js";
 
+const FALLBACK_THUMBNAIL = "assets/projects/codex-gallery/thumbnail.svg";
+
 const state = {
   projects: [],
   query: "",
@@ -8,7 +10,7 @@ const state = {
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   year: "numeric",
-  month: "long",
+  month: "short",
   day: "numeric"
 });
 
@@ -17,13 +19,10 @@ const elements = {
   statusMessage: document.querySelector("[data-status-message]"),
   resultCount: document.querySelector("[data-result-count]"),
   searchInput: document.querySelector("[data-search-input]"),
-  tagFilter: document.querySelector("[data-tag-filter]"),
-  totalProjects: document.querySelector("[data-total-projects]"),
-  totalTags: document.querySelector("[data-total-tags]")
+  tagFilter: document.querySelector("[data-tag-filter]")
 };
 
-const requiredElements = Object.entries(elements);
-const missingElements = requiredElements
+const missingElements = Object.entries(elements)
   .filter(([, element]) => !element)
   .map(([name]) => name);
 
@@ -37,38 +36,25 @@ function setStatus(message, isVisible = Boolean(message)) {
 }
 
 function setResultCount(count) {
-  elements.resultCount.textContent = `${count}개 프로젝트`;
+  elements.resultCount.textContent = `${count}\uac1c \ud504\ub85c\uc81d\ud2b8`;
 }
 
 function formatDate(value) {
-  if (!value) {
-    return "";
-  }
+  if (!value) return "";
 
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return dateFormatter.format(date);
+  return Number.isNaN(date.getTime()) ? "" : dateFormatter.format(date);
 }
 
 function createTextElement(tagName, className, text) {
   const element = document.createElement(tagName);
-
-  if (className) {
-    element.className = className;
-  }
-
+  if (className) element.className = className;
   element.textContent = text;
   return element;
 }
 
 function getSafeUrl(value) {
-  if (!value) {
-    return "";
-  }
+  if (!value) return "";
 
   try {
     const url = new URL(value, window.location.href);
@@ -80,21 +66,14 @@ function getSafeUrl(value) {
 
 function createProjectLink(href, label, className = "") {
   const safeHref = getSafeUrl(href);
-
-  if (!safeHref) {
-    return null;
-  }
+  if (!safeHref) return null;
 
   const link = document.createElement("a");
   link.href = safeHref;
   link.textContent = label;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-
-  if (className) {
-    link.className = className;
-  }
-
+  if (className) link.className = className;
   return link;
 }
 
@@ -106,11 +85,11 @@ function createProjectCard(project) {
   article.className = "project-card";
 
   const thumbnail = document.createElement("img");
-  thumbnail.src = project.thumbnail || "assets/projects/codex-gallery/thumbnail.svg";
+  thumbnail.src = project.thumbnail || FALLBACK_THUMBNAIL;
   thumbnail.alt = `${title} thumbnail`;
   thumbnail.loading = "lazy";
   thumbnail.addEventListener("error", () => {
-    thumbnail.src = "assets/projects/codex-gallery/thumbnail.svg";
+    thumbnail.src = FALLBACK_THUMBNAIL;
   }, { once: true });
   article.append(thumbnail);
 
@@ -121,13 +100,8 @@ function createProjectCard(project) {
   meta.className = "project-meta";
 
   const dateText = formatDate(project.updatedAt || project.createdAt);
-  if (dateText) {
-    meta.append(createTextElement("span", "", dateText));
-  }
-
-  if (project.status) {
-    meta.append(createTextElement("span", "", project.status));
-  }
+  if (dateText) meta.append(createTextElement("span", "", dateText));
+  if (project.status) meta.append(createTextElement("span", "", project.status));
 
   body.append(meta);
   body.append(createTextElement("h3", "", title));
@@ -135,36 +109,29 @@ function createProjectCard(project) {
 
   const tags = document.createElement("ul");
   tags.className = "tag-list";
-
   for (const tag of project.tags || []) {
     const tagItem = document.createElement("li");
     tagItem.className = "tag";
     tagItem.textContent = tag;
     tags.append(tagItem);
   }
-
   body.append(tags);
 
   const links = document.createElement("div");
   links.className = "project-links";
 
   const demoLink = createProjectLink(project.links?.demo, "Demo");
-  if (demoLink) {
-    links.append(demoLink);
-  }
+  if (demoLink) links.append(demoLink);
 
   const githubLink = createProjectLink(project.links?.github, "GitHub", "secondary");
-  if (githubLink) {
-    links.append(githubLink);
-  }
+  if (githubLink) links.append(githubLink);
 
   if (!links.children.length) {
-    links.append(createTextElement("span", "", "공개 링크가 없습니다."));
+    links.append(createTextElement("span", "project-links-empty", "\uacf5\uac1c \ub9c1\ud06c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4."));
   }
 
   body.append(links);
   article.append(body);
-
   return article;
 }
 
@@ -175,7 +142,7 @@ function renderTagOptions() {
 
   const allOption = document.createElement("option");
   allOption.value = "all";
-  allOption.textContent = "전체";
+  allOption.textContent = "\uc804\uccb4";
   elements.tagFilter.append(allOption);
 
   for (const tag of tags) {
@@ -186,7 +153,6 @@ function renderTagOptions() {
   }
 
   elements.tagFilter.value = state.tag;
-  elements.totalTags.textContent = String(tags.length);
 }
 
 function renderProjects() {
@@ -199,16 +165,12 @@ function renderProjects() {
   setResultCount(filteredProjects.length);
 
   if (!filteredProjects.length) {
-    setStatus("조건에 맞는 프로젝트가 없습니다.");
+    setStatus("\uc870\uac74\uc5d0 \ub9de\ub294 \ud504\ub85c\uc81d\ud2b8\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.");
     return;
   }
 
   setStatus("", false);
   elements.grid.append(...filteredProjects.map(createProjectCard));
-}
-
-function renderStats() {
-  elements.totalProjects.textContent = String(state.projects.length);
 }
 
 function bindEvents() {
@@ -224,27 +186,24 @@ function bindEvents() {
 }
 
 async function loadProjects() {
-  setStatus("프로젝트를 불러오는 중입니다.");
+  setStatus("\ud504\ub85c\uc81d\ud2b8\ub97c \ubd88\ub7ec\uc624\ub294 \uc911\uc785\ub2c8\ub2e4.");
 
   try {
     const response = await fetch("projects.json");
-
     if (!response.ok) {
       throw new Error(`Unable to load projects.json: ${response.status}`);
     }
 
     const allProjects = await response.json();
     state.projects = getPublicProjects(allProjects);
-
-    renderStats();
     renderTagOptions();
     renderProjects();
   } catch (error) {
     console.error(error);
     elements.grid.replaceChildren();
-    elements.resultCount.textContent = "불러오기 실패";
+    elements.resultCount.textContent = "\ubd88\ub7ec\uc624\uae30 \uc2e4\ud328";
     setStatus(
-      "프로젝트 데이터를 불러오지 못했습니다. 로컬 파일로 열었다면 작은 미리보기 서버로 다시 열어주세요."
+      "\ud504\ub85c\uc81d\ud2b8 \ub370\uc774\ud130\ub97c \ubd88\ub7ec\uc624\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \ub85c\uceec \ud30c\uc77c\ub85c \uc5f4\uc5c8\ub2e4\uba74 \uc791\uc740 \ubbf8\ub9ac\ubcf4\uae30 \uc11c\ubc84\ub85c \ub2e4\uc2dc \uc5f4\uc5b4\uc8fc\uc138\uc694."
     );
   }
 }
