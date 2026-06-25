@@ -14,5 +14,21 @@
       "demo": "",
       "github": ""
     }
+  },
+  {
+    "id": "dinner-recommander",
+    "title": "오늘 뭐 먹지?",
+    "summary": "서울 후암초 급식과 겹치지 않도록 저녁 메뉴를 추천하는 웹앱입니다.",
+    "description": "Next.js로 만든 식사 추천 앱입니다. 서울 후암초 급식 API를 확인하고, 매운 메뉴와 생선 메뉴를 피하면서 김치 반찬은 허용하는 조건으로 오늘 저녁 메뉴와 대안을 제안합니다.",
+    "status": "published",
+    "visibility": "public",
+    "tags": ["Next.js", "Food", "API", "Web"],
+    "createdAt": "2026-06-25",
+    "updatedAt": "2026-06-25",
+    "thumbnail": "assets/projects/dinner-recommander/thumbnail.svg",
+    "links": {
+      "demo": "https://dinner-recommander.vercel.app/",
+      "github": "https://github.com/juniye/dinner_recommander"
+    }
   }
 ]
