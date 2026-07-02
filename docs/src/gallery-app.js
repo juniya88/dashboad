@@ -1,7 +1,5 @@
 import { filterProjects, getAllTags, getPublicProjects } from "./project-utils.js";
 
-const FALLBACK_THUMBNAIL = "assets/projects/codex-gallery/thumbnail.svg";
-
 const state = {
   projects: [],
   query: "",
@@ -83,15 +81,6 @@ function createProjectCard(project) {
 
   const article = document.createElement("article");
   article.className = "project-card";
-
-  const thumbnail = document.createElement("img");
-  thumbnail.src = project.thumbnail || FALLBACK_THUMBNAIL;
-  thumbnail.alt = `${title} thumbnail`;
-  thumbnail.loading = "lazy";
-  thumbnail.addEventListener("error", () => {
-    thumbnail.src = FALLBACK_THUMBNAIL;
-  }, { once: true });
-  article.append(thumbnail);
 
   const body = document.createElement("div");
   body.className = "project-body";
