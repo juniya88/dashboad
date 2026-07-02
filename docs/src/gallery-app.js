@@ -178,7 +178,7 @@ async function loadProjects() {
   setStatus("\ud504\ub85c\uc81d\ud2b8\ub97c \ubd88\ub7ec\uc624\ub294 \uc911\uc785\ub2c8\ub2e4.");
 
   try {
-    const response = await fetch("projects.json");
+    const response = await fetch("projects.json?v=20260702-subscription-keeper");
     if (!response.ok) {
       throw new Error(`Unable to load projects.json: ${response.status}`);
     }
