@@ -1,0 +1,39 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">구독지킴이 썸네일</title>
+  <desc id="desc">정기 구독 결제일과 만기일을 관리하는 데스크톱 앱 카드형 썸네일</desc>
+  <rect width="1200" height="720" rx="48" fill="#f6f7f9"/>
+  <rect x="76" y="64" width="1048" height="592" rx="28" fill="#ffffff" stroke="#d9dee7" stroke-width="3"/>
+  <rect x="76" y="64" width="1048" height="98" rx="28" fill="#1f2937"/>
+  <rect x="76" y="124" width="1048" height="38" fill="#1f2937"/>
+  <text x="124" y="126" fill="#ffffff" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="44" font-weight="800">구독지킴이</text>
+  <text x="124" y="214" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="26">Windows 데스크톱 구독 관리 앱</text>
+  <g transform="translate(124 254)">
+    <rect width="214" height="108" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="24" y="42" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="20">월 예상 구독료</text>
+    <text x="24" y="82" fill="#1f2937" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="34" font-weight="800">126,400원</text>
+    <rect x="242" width="214" height="108" rx="18" fill="#ecfdf5" stroke="#bbf7d0"/>
+    <text x="266" y="42" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="20">7일 이내</text>
+    <text x="266" y="82" fill="#1f2937" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="34" font-weight="800">3개</text>
+    <rect x="484" width="214" height="108" rx="18" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="508" y="42" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="20">이번 달 예정</text>
+    <text x="508" y="82" fill="#1f2937" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="34" font-weight="800">89,900원</text>
+  </g>
+  <g transform="translate(124 402)">
+    <rect width="792" height="132" rx="20" fill="#ffffff" stroke="#d9dee7" stroke-width="3"/>
+    <rect width="10" height="132" rx="5" fill="#f97316"/>
+    <text x="36" y="46" fill="#1f2937" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="32" font-weight="800">ChatGPT Plus</text>
+    <text x="36" y="84" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="22">AI · 29,000 KRW · 다음 결제일</text>
+    <rect x="36" y="102" width="420" height="10" rx="5" fill="#e8edf3"/>
+    <rect x="36" y="102" width="360" height="10" rx="5" fill="#2563eb"/>
+    <text x="614" y="74" fill="#1f2937" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="54" font-weight="900">3일</text>
+    <rect x="686" y="34" width="82" height="38" rx="19" fill="#ffe6d1"/>
+    <text x="704" y="60" fill="#9a3412" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="20" font-weight="800">임박</text>
+  </g>
+  <g transform="translate(940 254)">
+    <rect width="132" height="132" rx="34" fill="#2563eb"/>
+    <rect x="31" y="32" width="70" height="66" rx="9" fill="#ffffff"/>
+    <rect x="31" y="32" width="70" height="20" rx="9" fill="#14b8a6"/>
+    <path d="M58 78 L70 90 L96 62" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="124" y="594" fill="#657286" font-family="Segoe UI, Malgun Gothic, sans-serif" font-size="24">PySide6 · SQLite · CSV 백업 · Windows 알림 · exe 빌드</text>
+</svg>
