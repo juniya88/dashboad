@@ -2,8 +2,8 @@
   {
     "id": "subscription-keeper",
     "title": "구독지킴이",
-    "summary": "정기 구독의 결제일과 만기일을 직접 등록하고 남은 기간을 확인하는 Windows 데스크톱 앱입니다.",
-    "description": "Python, PySide6, SQLite로 만든 구독 관리 앱입니다. 1차 MVP 단계로 구독 추가/수정/삭제, 남은 일수와 상태 표시, 갱신 완료, CSV 백업/복원, Windows 알림, exe 빌드를 지원합니다.",
+    "summary": "구독 결제일과 만기일을 관리하는 데스크톱 앱입니다.",
+    "description": "Python, PySide6, SQLite로 만든 구독 관리 앱입니다. 구독 추가, 수정, 삭제, 남은 일수 표시, CSV 백업과 복원을 지원합니다.",
     "status": "published",
     "visibility": "public",
     "tags": [
@@ -22,30 +22,10 @@
     }
   },
   {
-    "id": "codex-gallery",
-    "title": "Codex Project Gallery",
-    "summary": "Codex로 만든 프로젝트들을 모아 보여주는 개인 작업물 갤러리.",
-    "description": "A portfolio-first static gallery that reads project records from projects.json and can be updated by Codex after future projects.",
-    "status": "published",
-    "visibility": "public",
-    "tags": [
-      "Codex",
-      "Portfolio",
-      "Web"
-    ],
-    "createdAt": "2026-06-21",
-    "updatedAt": "2026-06-21",
-    "thumbnail": "assets/projects/codex-gallery/thumbnail.svg",
-    "links": {
-      "demo": "https://juniya88.github.io/dashboad/",
-      "github": "https://github.com/juniya88/dashboad"
-    }
-  },
-  {
     "id": "dinner-recommander",
     "title": "오늘 뭐 먹지?",
-    "summary": "서울 후암초 급식과 겹치지 않도록 저녁 메뉴를 추천하는 웹앱입니다.",
-    "description": "Next.js로 만든 식사 추천 앱입니다. 서울 후암초 급식 API를 확인하고, 매운 메뉴와 생선 메뉴를 피하면서 김치 반찬은 허용하는 조건으로 오늘 저녁 메뉴와 대안을 제안합니다.",
+    "summary": "급식과 겹치지 않는 저녁 메뉴 추천 웹앱입니다.",
+    "description": "Next.js로 만든 식사 추천 앱입니다. 서울 후암초 급식 API를 확인하고 조건에 맞는 저녁 메뉴와 대안을 제안합니다.",
     "status": "published",
     "visibility": "public",
     "tags": [
@@ -60,6 +40,26 @@
     "links": {
       "demo": "https://dinner-recommander.vercel.app/",
       "github": ""
+    }
+  },
+  {
+    "id": "codex-gallery",
+    "title": "작업물 갤러리",
+    "summary": "내 프로젝트를 모아 관리하는 정적 갤러리입니다.",
+    "description": "projects.json을 읽어 프로젝트 카드를 보여주는 개인 작업물 갤러리입니다. 새 프로젝트를 마친 뒤 Codex가 데이터를 업데이트하기 좋은 구조로 만들었습니다.",
+    "status": "published",
+    "visibility": "public",
+    "tags": [
+      "Codex",
+      "Portfolio",
+      "Web"
+    ],
+    "createdAt": "2026-06-21",
+    "updatedAt": "2026-07-03",
+    "thumbnail": "assets/projects/codex-gallery/thumbnail.svg",
+    "links": {
+      "demo": "https://juniya88.github.io/dashboad/",
+      "github": "https://github.com/juniya88/dashboad"
     }
   }
 ]

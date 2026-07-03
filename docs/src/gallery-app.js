@@ -1,13 +1,24 @@
-import { filterProjects, getAllTags, getPublicProjects } from "./project-utils.js";
+import { filterProjects, getPublicProjects } from "./project-utils.js";
+
+const categoryFilters = [
+  { id: "all", label: "전체" },
+  { id: "web", label: "웹앱" },
+  { id: "desktop", label: "데스크톱" },
+  { id: "tool", label: "관리도구" }
+];
+
+const projectVisuals = {
+  "subscription-keeper": { icon: "□", className: "project-icon--green" },
+  "dinner-recommander": { icon: "○", className: "project-icon--orange" },
+  "codex-gallery": { icon: "▦", className: "project-icon--blue" }
+};
 
 const state = {
   projects: [],
-  query: "",
-  tag: "all"
+  category: "all"
 };
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
   month: "short",
   day: "numeric"
 });
@@ -16,8 +27,10 @@ const elements = {
   grid: document.querySelector("[data-project-grid]"),
   statusMessage: document.querySelector("[data-status-message]"),
   resultCount: document.querySelector("[data-result-count]"),
-  searchInput: document.querySelector("[data-search-input]"),
-  tagFilter: document.querySelector("[data-tag-filter]")
+  filterChips: document.querySelector("[data-filter-chips]"),
+  statProjects: document.querySelector("[data-stat-projects]"),
+  statLinks: document.querySelector("[data-stat-links]"),
+  statUpdated: document.querySelector("[data-stat-updated]")
 };
 
 const missingElements = Object.entries(elements)
@@ -34,7 +47,7 @@ function setStatus(message, isVisible = Boolean(message)) {
 }
 
 function setResultCount(count) {
-  elements.resultCount.textContent = `${count}\uac1c \ud504\ub85c\uc81d\ud2b8`;
+  elements.resultCount.textContent = `${count}개 프로젝트`;
 }
 
 function formatDate(value) {
@@ -75,6 +88,32 @@ function createProjectLink(href, label, className = "") {
   return link;
 }
 
+function getStatusLabel(status) {
+  if (status === "archived") return "ARCHIVE";
+  if (status === "draft") return "WIP";
+  return "LIVE";
+}
+
+function projectMatchesCategory(project, category) {
+  const tags = project.tags || [];
+
+  if (category === "all") return true;
+  if (category === "web") return tags.includes("Web") || tags.includes("Next.js") || tags.includes("Portfolio");
+  if (category === "desktop") return tags.includes("Desktop") || tags.includes("PySide6");
+  if (category === "tool") return tags.includes("SQLite") || tags.includes("Portfolio") || tags.includes("Codex");
+
+  return true;
+}
+
+function createProjectIcon(project) {
+  const visual = projectVisuals[project.id] || { icon: "□", className: "project-icon--gray" };
+  const icon = document.createElement("span");
+  icon.className = `project-icon ${visual.className}`;
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = visual.icon;
+  return icon;
+}
+
 function createProjectCard(project) {
   const title = project.title || "Untitled project";
   const summary = project.summary || "No summary available yet.";
@@ -82,23 +121,27 @@ function createProjectCard(project) {
   const article = document.createElement("article");
   article.className = "project-card";
 
+  const header = document.createElement("div");
+  header.className = "project-card-header";
+  header.append(createProjectIcon(project));
+  header.append(createTextElement("span", "status-badge", getStatusLabel(project.status)));
+
   const body = document.createElement("div");
   body.className = "project-body";
 
-  const meta = document.createElement("div");
-  meta.className = "project-meta";
-
-  const dateText = formatDate(project.updatedAt || project.createdAt);
-  if (dateText) meta.append(createTextElement("span", "", dateText));
-  if (project.status) meta.append(createTextElement("span", "", project.status));
-
-  body.append(meta);
   body.append(createTextElement("h3", "", title));
   body.append(createTextElement("p", "", summary));
 
+  const meta = document.createElement("div");
+  meta.className = "project-meta";
+  const dateText = formatDate(project.updatedAt || project.createdAt);
+  if (dateText) meta.append(createTextElement("span", "", dateText));
+  if (project.id) meta.append(createTextElement("span", "", `/${project.id}`));
+  body.append(meta);
+
   const tags = document.createElement("ul");
   tags.className = "tag-list";
-  for (const tag of project.tags || []) {
+  for (const tag of (project.tags || []).slice(0, 3)) {
     const tagItem = document.createElement("li");
     tagItem.className = "tag";
     tagItem.textContent = tag;
@@ -109,52 +152,62 @@ function createProjectCard(project) {
   const links = document.createElement("div");
   links.className = "project-links";
 
-  const demoLink = createProjectLink(project.links?.demo, "Demo");
+  const demoLink = createProjectLink(project.links?.demo, "열기");
   if (demoLink) links.append(demoLink);
 
-  const githubLink = createProjectLink(project.links?.github, "GitHub", "secondary");
+  const githubLink = createProjectLink(project.links?.github, "GitHub", demoLink ? "secondary" : "");
   if (githubLink) links.append(githubLink);
 
   if (!links.children.length) {
-    links.append(createTextElement("span", "project-links-empty", "\uacf5\uac1c \ub9c1\ud06c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4."));
+    links.append(createTextElement("span", "project-links-empty", "공개 링크가 없습니다."));
   }
 
   body.append(links);
-  article.append(body);
+  article.append(header, body);
   return article;
 }
 
-function renderTagOptions() {
-  const tags = getAllTags(state.projects);
+function getVisibleProjects() {
+  return filterProjects(state.projects).filter((project) => projectMatchesCategory(project, state.category));
+}
 
-  elements.tagFilter.replaceChildren();
+function renderFilterChips() {
+  elements.filterChips.replaceChildren();
 
-  const allOption = document.createElement("option");
-  allOption.value = "all";
-  allOption.textContent = "\uc804\uccb4";
-  elements.tagFilter.append(allOption);
-
-  for (const tag of tags) {
-    const option = document.createElement("option");
-    option.value = tag;
-    option.textContent = tag;
-    elements.tagFilter.append(option);
+  for (const filter of categoryFilters) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "filter-chip";
+    button.dataset.category = filter.id;
+    button.textContent = filter.label;
+    button.setAttribute("aria-pressed", String(filter.id === state.category));
+    elements.filterChips.append(button);
   }
+}
 
-  elements.tagFilter.value = state.tag;
+function renderSummary() {
+  const linkCount = state.projects.reduce((count, project) => {
+    return count + [project.links?.demo, project.links?.github].filter(getSafeUrl).length;
+  }, 0);
+
+  const latestDate = state.projects
+    .map((project) => project.updatedAt || project.createdAt)
+    .filter(Boolean)
+    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0];
+
+  elements.statProjects.textContent = state.projects.length;
+  elements.statLinks.textContent = linkCount;
+  elements.statUpdated.textContent = formatDate(latestDate) || "-";
 }
 
 function renderProjects() {
-  const filteredProjects = filterProjects(state.projects, {
-    query: state.query,
-    tag: state.tag
-  });
+  const filteredProjects = getVisibleProjects();
 
   elements.grid.replaceChildren();
   setResultCount(filteredProjects.length);
 
   if (!filteredProjects.length) {
-    setStatus("\uc870\uac74\uc5d0 \ub9de\ub294 \ud504\ub85c\uc81d\ud2b8\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.");
+    setStatus("조건에 맞는 프로젝트가 없습니다.");
     return;
   }
 
@@ -163,37 +216,35 @@ function renderProjects() {
 }
 
 function bindEvents() {
-  elements.searchInput.addEventListener("input", (event) => {
-    state.query = event.target.value;
-    renderProjects();
-  });
+  elements.filterChips.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-category]");
+    if (!button) return;
 
-  elements.tagFilter.addEventListener("change", (event) => {
-    state.tag = event.target.value;
+    state.category = button.dataset.category;
+    renderFilterChips();
     renderProjects();
   });
 }
 
 async function loadProjects() {
-  setStatus("\ud504\ub85c\uc81d\ud2b8\ub97c \ubd88\ub7ec\uc624\ub294 \uc911\uc785\ub2c8\ub2e4.");
+  setStatus("프로젝트를 불러오는 중입니다.");
 
   try {
-    const response = await fetch("projects.json?v=20260702-subscription-keeper");
+    const response = await fetch("projects.json?v=20260703-dashboard-ui");
     if (!response.ok) {
       throw new Error(`Unable to load projects.json: ${response.status}`);
     }
 
     const allProjects = await response.json();
     state.projects = getPublicProjects(allProjects);
-    renderTagOptions();
+    renderSummary();
+    renderFilterChips();
     renderProjects();
   } catch (error) {
     console.error(error);
     elements.grid.replaceChildren();
-    elements.resultCount.textContent = "\ubd88\ub7ec\uc624\uae30 \uc2e4\ud328";
-    setStatus(
-      "\ud504\ub85c\uc81d\ud2b8 \ub370\uc774\ud130\ub97c \ubd88\ub7ec\uc624\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4. \ub85c\uceec \ud30c\uc77c\ub85c \uc5f4\uc5c8\ub2e4\uba74 \uc791\uc740 \ubbf8\ub9ac\ubcf4\uae30 \uc11c\ubc84\ub85c \ub2e4\uc2dc \uc5f4\uc5b4\uc8fc\uc138\uc694."
-    );
+    elements.resultCount.textContent = "불러오기 실패";
+    setStatus("프로젝트 데이터를 불러오지 못했습니다. 로컬 파일로 열었다면 작은 미리보기 서버로 다시 열어주세요.");
   }
 }
 
