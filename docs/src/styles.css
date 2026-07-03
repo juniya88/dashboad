@@ -62,25 +62,10 @@ select {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.62rem;
   min-width: 0;
   font-weight: 800;
 }
 
-.brand-mark {
-  display: grid;
-  flex: 0 0 2rem;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 900;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-}
 
 .brand-text {
   overflow-wrap: anywhere;
